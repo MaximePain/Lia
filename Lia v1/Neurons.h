@@ -10,7 +10,7 @@ public:
 	void makeLiaison(int nbNeuron);
 	void breakLiaison(int nbNeuron);
 
-	void activate(std::vector<std::vector<Neurons>> *pointerLs2, int *outIntP);
+	void activate(std::vector<std::vector<Neurons>> *pointerLs2, void (*output)(int));
 
 	std::vector<int> liaisons;
 	//std::vector<std::vector<Neurons>> *pointerLs = 0;

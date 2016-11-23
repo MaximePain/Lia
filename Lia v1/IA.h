@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Game.h"
 #include <vector>
 #include "Neurons.h"
 #include <iostream>
@@ -8,7 +7,6 @@
 #include <sstream>
 #include <cstdlib>
 #include <time.h>
-#include "Game.h"
 
 class IA
 {
@@ -19,22 +17,24 @@ public:
 	std::string returnADN();
 	bool mutate();
 
-	void output();
+	void output(int out);
 	int numFindStr(std::string str0, std::string strF);
+	std::string fusion(std::string genom1, std::string genom2);
 
+	void addOutput( void (*f)(int) );
 
 	int outInt = -1;
 	int input1 = 0;
 	//int nbOutput = 1; //une seul sortie pour play
 
-	Game *gameP;
 	int score;
+	std::vector<void (*)(int)> outputList;
 
-	std::string fusion(std::string genom1, std::string genom2);
 
 	~IA();
 
 	std::vector<std::vector<Neurons>> neuronsLs;
 	int maxMode = 9;
+	int newUpdate;
 };
 

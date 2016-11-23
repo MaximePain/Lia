@@ -159,17 +159,15 @@ void IA::update()
 	//std::cout << "neuronLs size: " << neuronsLs.size() << std::endl;
 	//std::cout << "pointerLs size: " << neuronsLs[0][0].pointerLs->size() << std::endl;
 	//std::cout << "adn: " << returnADN() << std::endl;
-	input1 = gameP->PM;
+	newUpdate = 0;
 	for (unsigned int i(0); i < neuronsLs[0].size(); i++)
 		neuronsLs[0][i].inputs.push_back(input1);
 
 	for (unsigned int i(0); i < neuronsLs.size(); i++)
 		for (unsigned int y(0); y < neuronsLs[i].size(); y++)
 		{
-			neuronsLs[i][y].activate(&neuronsLs, &outInt);
+			neuronsLs[i][y].activate(&neuronsLs, &output);
 		}
-	//std::cout << "output: " << outInt << std::endl;
-	output();
 };
 
 std::string IA::returnADN()
@@ -272,10 +270,11 @@ bool IA::mutate()
 	return ret;
 }
 
-void IA::output()
+void IA::output(int out)
 {
 	//std::cout << "output: " << outInt << std::endl;
-	gameP->play(outInt);
+	outputList[newUpdate](out);
+	newUpdate++;
 }
 
 std::string IA::fusion(std::string genom1, std::string genom2) //std::string neuronBase = "0:0!0|0:0!0|0:0!0|0:0!0|0:0!0|1:10!0|";
@@ -335,6 +334,11 @@ std::string IA::fusion(std::string genom1, std::string genom2) //std::string neu
 	}
 	//std::cout << "result: " << result << std::endl;
 	return result;
+}
+
+void IA::addOutput( void (*f)(int) )
+{
+	outputList.push_back(f);
 }
 
 IA::~IA()
