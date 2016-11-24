@@ -5,12 +5,15 @@
 #include "IA.h"
 #include <string>
 #include <iostream>
+#include <windows.h>
 
 
 int main()
 {
 	std::string yop = "yop";
 	IA debug(yop);
+
+	system("PAUSE");
     return 0;
 }
 

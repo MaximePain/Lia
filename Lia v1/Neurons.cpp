@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "Neurons.h"
 
-
 Neurons::Neurons(int modeTemp, int colonneTemp, int idTemp/*, std::vector<std::vector<Neurons>> *pointerLsTemp*/)
 {
 	//*pointerLs = *pointerLsTemp;
@@ -27,7 +26,7 @@ void Neurons::breakLiaison(int nbNeuron)
 	liaisons = replace;
 }
 
-void Neurons::activate(std::vector<std::vector<Neurons>> *pointerLs2, void(*output)(int)) //0 = addition, 1 = multiplication, 2 = division, 3 = soustraction, 4 = &&, 5 = ||, 6 = !, 7 = CONST, 8 = MEM
+void Neurons::activate(std::vector<std::vector<Neurons>> *pointerLs2, void (*output)(int)) //0 = addition, 1 = multiplication, 2 = division, 3 = soustraction, 4 = &&, 5 = ||, 6 = !, 7 = CONST, 8 = MEM
 {
 	int value = 0;
 	switch (mode)

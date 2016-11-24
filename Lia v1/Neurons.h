@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <iostream>
+#include <functional>
 
 class Neurons
 {
@@ -10,7 +11,7 @@ public:
 	void makeLiaison(int nbNeuron);
 	void breakLiaison(int nbNeuron);
 
-	void activate(std::vector<std::vector<Neurons>> *pointerLs2, void (*output)(int));
+	void activate(std::vector<std::vector<Neurons>> *pointerLs2, void(*output)(int) = 0);
 
 	std::vector<int> liaisons;
 	//std::vector<std::vector<Neurons>> *pointerLs = 0;

@@ -7,6 +7,7 @@
 #include <sstream>
 #include <cstdlib>
 #include <time.h>
+#include <functional>
 
 class IA
 {
@@ -22,19 +23,22 @@ public:
 	std::string fusion(std::string genom1, std::string genom2);
 
 	void addOutput( void (*f)(int) );
+	void addInput(int *input, int liaison);
 
 	int outInt = -1;
-	int input1 = 0;
+
 	//int nbOutput = 1; //une seul sortie pour play
 
 	int score;
 	std::vector<void (*)(int)> outputList;
-
+	
 
 	~IA();
 
 	std::vector<std::vector<Neurons>> neuronsLs;
 	int maxMode = 9;
+	std::vector<int*> inputList;
+	std::vector<int> inputListLiaison;
 	int newUpdate;
 };
 

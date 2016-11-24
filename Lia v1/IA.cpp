@@ -160,15 +160,25 @@ void IA::update()
 	//std::cout << "pointerLs size: " << neuronsLs[0][0].pointerLs->size() << std::endl;
 	//std::cout << "adn: " << returnADN() << std::endl;
 	newUpdate = 0;
-	for (unsigned int i(0); i < neuronsLs[0].size(); i++)
-		neuronsLs[0][i].inputs.push_back(input1);
+
+	for (int &i : inputListLiaison)
+	{
+		int* inputPointer = inputList[i];
+		neuronsLs[0][inputListLiaison[i]].inputs.push_back(*inputPointer);
+	}
 
 	for (unsigned int i(0); i < neuronsLs.size(); i++)
 		for (unsigned int y(0); y < neuronsLs[i].size(); y++)
 		{
-			neuronsLs[i][y].activate(&neuronsLs, &output);
+			if(neuronsLs[i][y].mode != 10)
+				neuronsLs[i][y].activate(&neuronsLs);
+			else
+			{
+				neuronsLs[i][y].activate(&neuronsLs, outputList[newUpdate]);
+				newUpdate++;
+			}
 		}
-};
+}
 
 std::string IA::returnADN()
 {
@@ -274,7 +284,6 @@ void IA::output(int out)
 {
 	//std::cout << "output: " << outInt << std::endl;
 	outputList[newUpdate](out);
-	newUpdate++;
 }
 
 std::string IA::fusion(std::string genom1, std::string genom2) //std::string neuronBase = "0:0!0|0:0!0|0:0!0|0:0!0|0:0!0|1:10!0|";
@@ -284,8 +293,12 @@ std::string IA::fusion(std::string genom1, std::string genom2) //std::string neu
 	std::string extract2 = "";
 	int nbChar1 = 0;
 	int nbChar2 = 0;
+
 	if (genom2.size() > genom1.size()) //genom1 doit etre la plus grande
 		genom2.swap(genom1);
+
+	int nbD10 = numFindStr(genom1, ":10");
+	int nbD10Found = 0;
 
 	while (1)
 	{
@@ -311,8 +324,10 @@ std::string IA::fusion(std::string genom1, std::string genom2) //std::string neu
 			extract2 = extract1;
 		if (extract1.find(":10") != std::string::npos)
 		{
+			nbD10Found++;
 			result += extract1;
-			break;
+			if(nbD10Found >= nbD10)
+				break;
 		}
 		if (extract1.find(":10") == std::string::npos && extract2.find(":10") == std::string::npos)
 		{
@@ -339,6 +354,12 @@ std::string IA::fusion(std::string genom1, std::string genom2) //std::string neu
 void IA::addOutput( void (*f)(int) )
 {
 	outputList.push_back(f);
+}
+
+void IA::addInput(int *input, int liaison)
+{
+	inputList.push_back(input);
+	inputListLiaison.push_back(liaison);
 }
 
 IA::~IA()
