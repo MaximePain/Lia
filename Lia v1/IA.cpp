@@ -118,13 +118,9 @@ IA::IA(std::string params) //std::string neuronBase = "0:0!0|0:0!0|0:0!0|0:0!0|0
 					neuronsLs[nbCol + 1].push_back(Neurons(0, nbCol + 1, nbColVec[nbCol + 1]));
 					nbColVec[nbCol + 1]++;
 				}
-				if (liaisonNum != 0) {
-					if (numFindStr(params, ss.str()) > liaisonNum + 1) //rectification si neuronne a disparue en ajoutant liasion
-						neuronsLs[nbCol][nbColVec[nbCol] - 1].makeLiaison(liaisonNum);
-				}
-				else
-					if (numFindStr(params, ss.str()) > liaisonNum)
-						neuronsLs[nbCol][nbColVec[nbCol] - 1].makeLiaison(liaisonNum);
+
+				if (numFindStr(params, ss.str()) > liaisonNum)
+					neuronsLs[nbCol][nbColVec[nbCol] - 1].makeLiaison(liaisonNum);
 				msg = "";
 			}
 			if (!hasLiaison)
@@ -170,7 +166,7 @@ void IA::update()
 	for (unsigned int i(0); i < neuronsLs.size(); i++)
 		for (unsigned int y(0); y < neuronsLs[i].size(); y++)
 		{
-			if(neuronsLs[i][y].mode != 10)
+			if (neuronsLs[i][y].mode != 10)
 				neuronsLs[i][y].activate(&neuronsLs);
 			else
 			{
@@ -212,9 +208,8 @@ bool IA::mutate()
 	{
 		for (unsigned int y(0); y < neuronsLs[i].size(); y++)
 		{
-			if ((rand() % 100) == 1)
+			if ((rand() % 10) == 1)
 			{
-				neuronsLs[i][y].mode = rand() % maxMode;
 				if ((rand() % 2) == 1) //liaison
 				{
 					if ((rand() % 2) == 1) //make liaison
@@ -245,14 +240,14 @@ bool IA::mutate()
 
 					}
 				}
-				if ((rand() % 10) == 1 || 1 == 1) //changement mode
+				if ((rand() % 10) == 1) //changement mode
 				{
 					neuronsLs[i][y].mode = rand() % maxMode;
 					ret = true;
 				}
 			}
 		}
-		if ((rand() % 2000) == 1) //addColonne (+add one neuron)
+		if ((rand() % 1000) == 1) //addColonne (+add one neuron)
 		{
 			std::vector<std::vector<Neurons>> replace;
 			std::vector<Neurons> replaceChild;
@@ -270,7 +265,7 @@ bool IA::mutate()
 			neuronsLs = replace;
 			ret = true;
 		}
-		if ((rand() % 1000) == 1) //addNeuron
+		if ((rand() % 500) == 1) //addNeuron
 		{
 			neuronsLs[i].push_back(Neurons(rand() % maxMode, i, neuronsLs[i].size()/*, &neuronsLs*/));
 			neuronsLs[i][neuronsLs[i].size() - 1].makeLiaison(0);
@@ -326,7 +321,7 @@ std::string IA::fusion(std::string genom1, std::string genom2) //std::string neu
 		{
 			nbD10Found++;
 			result += extract1;
-			if(nbD10Found >= nbD10)
+			if (nbD10Found >= nbD10)
 				break;
 		}
 		if (extract1.find(":10") == std::string::npos && extract2.find(":10") == std::string::npos)
@@ -351,7 +346,7 @@ std::string IA::fusion(std::string genom1, std::string genom2) //std::string neu
 	return result;
 }
 
-void IA::addOutput( void (*f)(int) )
+void IA::addOutput(void(*f)(int))
 {
 	outputList.push_back(f);
 }
