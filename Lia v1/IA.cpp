@@ -1,3 +1,4 @@
+//yop, jsuis Maxime :)
 #include "stdafx.h"
 #include "IA.h"
 
@@ -80,12 +81,14 @@ IA::IA(std::string params) //std::string neuronBase = "0:0!0|0:0!0|0:0!0|0:0!0|0
 			modeNeuron = atoi(msg.c_str());
 			msg = "";
 			mode = 2;
-			neuronsLs[nbCol].push_back(Neurons(modeNeuron, nbCol, nbColVec[nbCol]));
-			/*neuronsLs[nbCol][neuronsLs[nbCol].size() - 1].pointerLs = &neuronsLs;
-			std::cout << "pointerLs size: " << neuronsLs[nbCol][neuronsLs[nbCol].size() - 1].pointerLs->size() << std::endl;
-			if (modeNeuron == 10)
-				neuronsLs[nbCol][nbColVec[nbCol]].outIntP = &outInt;*/
-			nbColVec[nbCol]++;
+			if (modeNeuron != 10) {
+				neuronsLs[nbCol].push_back(Neurons(modeNeuron, nbCol, nbColVec[nbCol]));
+				/*neuronsLs[nbCol][neuronsLs[nbCol].size() - 1].pointerLs = &neuronsLs;
+				std::cout << "pointerLs size: " << neuronsLs[nbCol][neuronsLs[nbCol].size() - 1].pointerLs->size() << std::endl;
+				if (modeNeuron == 10)
+					neuronsLs[nbCol][nbColVec[nbCol]].outIntP = &outInt;*/
+				nbColVec[nbCol]++;
+			}
 			break;
 		case 2:
 			std::stringstream ss;
@@ -100,6 +103,18 @@ IA::IA(std::string params) //std::string neuronBase = "0:0!0|0:0!0|0:0!0|0:0!0|0
 					msg += params[nbChar];
 					nbChar++;
 				}
+				bool notEnd = false; //savoir si c'est la derniere colonne!
+				for (int eI = 1; eI < 10; eI++)
+				{
+					ss.str("");
+					ss.clear();
+					ss << '|';
+					ss << (nbCol + eI);
+					ss << ':';
+					if (numFindStr(params, ss.str()) != 0)
+						notEnd = true;
+				}
+
 
 				liaisonNum = atoi(msg.c_str());
 				ss.str("");
@@ -109,7 +124,7 @@ IA::IA(std::string params) //std::string neuronBase = "0:0!0|0:0!0|0:0!0|0:0!0|0
 				ss << ':';
 				if (params[nbChar] != '|')
 					nbChar++;
-				if (numFindStr(params, ss.str()) == 0 && modeNeuron != 10 && !rajout[nbCol]) //rectification si colonne a disparue (on sait jamais)
+				if (numFindStr(params, ss.str()) == 0 && modeNeuron != 10 && !rajout[nbCol] && notEnd) //rectification si colonne a disparue (on sait jamais)
 				{
 					rajout[nbCol] = true;
 					rajout.push_back(0);
@@ -119,11 +134,11 @@ IA::IA(std::string params) //std::string neuronBase = "0:0!0|0:0!0|0:0!0|0:0!0|0
 					nbColVec[nbCol + 1]++;
 				}
 
-				if (numFindStr(params, ss.str()) > liaisonNum)
+				if (numFindStr(params, ss.str()) > liaisonNum || !notEnd)
 					neuronsLs[nbCol][nbColVec[nbCol] - 1].makeLiaison(liaisonNum);
 				msg = "";
 			}
-			if (!hasLiaison)
+			if (!hasLiaison && modeNeuron != 10)
 				neuronsLs[nbCol][nbColVec[nbCol] - 1].makeLiaison(0);
 			nbChar++;
 			if (params.size() > nbChar)
@@ -136,7 +151,7 @@ IA::IA(std::string params) //std::string neuronBase = "0:0!0|0:0!0|0:0!0|0:0!0|0
 
 	//std::cout << "neu0: " << neuronsLs[neuronsLs.size() - 2][neuronsLs[neuronsLs.size() - 1].size()].mode << std::endl;
 
-	if (rajout[neuronsLs.size() - 2])
+	/*if (rajout[neuronsLs.size() - 2])
 	{
 		std::cout << "multi sortie error" << std::endl;
 		neuronsLs.pop_back();
@@ -146,7 +161,7 @@ IA::IA(std::string params) //std::string neuronBase = "0:0!0|0:0!0|0:0!0|0:0!0|0
 		}
 		neuronsLs[nbCol].push_back(Neurons(10, (neuronsLs[neuronsLs.size() - 1].size() - 1), 0));
 	}
-	neuronsLs[neuronsLs.size() - 1][neuronsLs[neuronsLs.size() - 1].size() - 1].makeLiaison(0);
+	neuronsLs[neuronsLs.size() - 1][neuronsLs[neuronsLs.size() - 1].size() - 1].makeLiaison(0);*/
 	//std::cout << "adn: " << returnADN() << std::endl;
 }
 
@@ -160,6 +175,7 @@ void IA::update()
 	for (int &i : inputListLiaison)
 	{
 		int* inputPointer = inputList[i];
+		//std::cout << "ADN BUG: " << returnADN() << std::endl;
 		neuronsLs[0][inputListLiaison[i]].inputs.push_back(*inputPointer);
 	}
 
@@ -265,11 +281,43 @@ bool IA::mutate()
 			neuronsLs = replace;
 			ret = true;
 		}
-		if ((rand() % 500) == 1) //addNeuron
+		if ((rand() % 500) == 1) //addNeuron or remove
 		{
-			neuronsLs[i].push_back(Neurons(rand() % maxMode, i, neuronsLs[i].size()/*, &neuronsLs*/));
-			neuronsLs[i][neuronsLs[i].size() - 1].makeLiaison(0);
-			ret = true;
+			if ((rand() % 2) == 1) //add
+			{
+				neuronsLs[i].push_back(Neurons(rand() % maxMode, i, neuronsLs[i].size()/*, &neuronsLs*/));
+				neuronsLs[i][neuronsLs[i].size() - 1].makeLiaison(0);
+				ret = true;
+			}
+			else //remove
+			{
+				if (neuronsLs[i].size() > 1)
+				{
+					if ((i == 0 && neuronsLs[0].size() > inputListLiaison.size() + 1) || i != 0)
+					{
+
+						int delTemp = rand() % neuronsLs[i].size();
+						std::vector<std::vector<Neurons>> replace;
+						std::vector<Neurons> replaceChild;
+
+						for (int i2 = 0; i2 < neuronsLs.size(); i2++)
+						{
+							for (int i3 = 0; i3 < neuronsLs[i2].size(); i3++)
+							{
+								if (i3 != delTemp || i2 != i)
+								{
+									replaceChild.push_back(neuronsLs[i2][i3]);
+								}
+							}
+							replace.push_back(replaceChild);
+							replaceChild.clear();
+						}
+						neuronsLs.clear();
+						neuronsLs = replace;
+					}
+				}
+			}
+
 		}
 	}
 	return ret;
@@ -319,10 +367,11 @@ std::string IA::fusion(std::string genom1, std::string genom2) //std::string neu
 			extract2 = extract1;
 		if (extract1.find(":10") != std::string::npos)
 		{
-			nbD10Found++;
+			/*nbD10Found++;
 			result += extract1;
 			if (nbD10Found >= nbD10)
 				break;
+				*/
 		}
 		if (extract1.find(":10") == std::string::npos && extract2.find(":10") == std::string::npos)
 		{
@@ -333,7 +382,7 @@ std::string IA::fusion(std::string genom1, std::string genom2) //std::string neu
 		}
 		if (extract2.find(":10") != std::string::npos && extract1.find(":10") == std::string::npos)
 		{
-			result += extract1;
+			//result += extract1;
 		}
 		extract1 = "";
 		extract2 = "";
@@ -342,12 +391,18 @@ std::string IA::fusion(std::string genom1, std::string genom2) //std::string neu
 		if (nbChar1 + 1 >= genom1.size())
 			break;
 	}
-	//std::cout << "result: " << result << std::endl;
+	std::cout << "result String: " << result << std::endl;
 	return result;
 }
 
 void IA::addOutput(void(*f)(int))
 {
+	std::vector<Neurons> child;
+	if (!alreadyOutAdd) {
+		neuronsLs.push_back(child);
+		alreadyOutAdd = true;
+	}
+	neuronsLs[neuronsLs.size() - 1].push_back(Neurons(10, neuronsLs.size() - 1, neuronsLs[neuronsLs.size() - 1].size() - 1));
 	outputList.push_back(f);
 }
 

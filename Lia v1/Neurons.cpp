@@ -1,3 +1,4 @@
+//yop, jsuis Maxime :)
 #include "stdafx.h"
 #include "Neurons.h"
 

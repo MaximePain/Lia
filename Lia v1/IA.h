@@ -1,3 +1,4 @@
+//yop, jsuis Maxime :)
 #pragma once
 
 #include <vector>
@@ -40,5 +41,6 @@ public:
 	std::vector<int*> inputList;
 	std::vector<int> inputListLiaison;
 	int newUpdate;
+	bool alreadyOutAdd = false;
 };
 
