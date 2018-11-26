@@ -7,7 +7,7 @@
 #include <string>
 #include <sstream>
 #include <cstdlib>
-#include <time.h>
+#include <ctime>
 #include <functional>
 
 class IA

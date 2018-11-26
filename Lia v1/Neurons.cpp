@@ -27,9 +27,94 @@ void Neurons::breakLiaison(int nbNeuron)
 	liaisons = replace;
 }
 
+void Neurons::pushInput(int in) {
+	switch (mode)
+	{
+	case 0: //+
+	case 10:
+		input += in;
+		break;
+	case 1: //x
+		if (!inputX)
+		{
+			inputX = true;
+			input = in;
+		}
+		else
+			input *= in;
+		break;
+	case 2:// /
+		if (!inputX)
+		{
+			inputX = true;
+			input = in;
+		}
+		else if(in != 0)
+			input /= in;
+		break;
+	case 3://-
+		if (!inputX)
+		{
+			inputX = true;
+			input = in;
+		}
+		else
+			input -= in;
+		break;
+	case 4: //&&
+		inputs.push_back(in);
+		if (inputs.size() > 1)
+		{
+			input = 1;
+			for (unsigned int i(0); i < inputs.size() - 1; i++)
+				if (inputs[i] != inputs[i + 1])
+					input = 0;
+			inputs.clear();
+		}
+		else
+			input = 0;
+		break;
+	case 5: //||
+		inputs.push_back(in);
+		if (inputs.size() > 0)
+		{
+			for (unsigned int i(0); i < inputs.size(); i++)
+				if (inputs[i] > 0)
+					input = 1;
+			inputs.clear();
+		}
+		else
+			input = 0;
+		break;
+	case 6: //!
+
+		input += in;
+		if (in != 0)
+			in = 0;
+		else
+			in = 1;
+
+		break;
+	case 7: //CONST
+		if (!inputConst)
+		{
+			inputConst = true;
+			input = in;
+		}
+		break;
+	case 8: //MEM
+		if (in != 0)
+			memory = in;
+		input = memory;
+		break;
+	default:
+		break;
+	}
+}
+
 void Neurons::activate(std::vector<std::vector<Neurons>> *pointerLs2, void(*output)(int)) //0 = addition, 1 = multiplication, 2 = division, 3 = soustraction, 4 = &&, 5 = ||, 6 = !, 7 = CONST, 8 = MEM
 {
-	/*for (int m = 0; m < 9; m++) {
+	for (int m = 0; m < 9; m++) {
 		int c = -1;
 		int c2 = 0;
 		for (int i = 0; i < liaisons.size(); i++)
@@ -48,12 +133,12 @@ void Neurons::activate(std::vector<std::vector<Neurons>> *pointerLs2, void(*outp
 			std::vector<int>temp;
 			temp.clear();
 			for (int y = 0; y < liaisons.size(); y++) {
-				if ( (y != c) && ( (*pointerLs2)[colonne + 1].size() > liaisons[y] ) )
+				if ( (y != c))
 					temp.push_back(liaisons[y]);
 			}
 			liaisons.swap(temp);
 		}
-	}*/
+	}
 	std::vector<int> temp;
 	for (int i = 0; i < liaisons.size(); i++)
 		if ((*pointerLs2)[colonne + 1].size() > liaisons[i])
@@ -61,7 +146,7 @@ void Neurons::activate(std::vector<std::vector<Neurons>> *pointerLs2, void(*outp
 	liaisons.clear();
 	liaisons.swap(temp);
 	int value = 0;
-	switch (mode)
+	/*switch (mode)
 	{
 	case 0: //+
 		for (unsigned int i(0); i < inputs.size(); i++)
@@ -150,19 +235,21 @@ void Neurons::activate(std::vector<std::vector<Neurons>> *pointerLs2, void(*outp
 		break;
 	default:
 		break;
-	}
+	}*/
 	//std::cout << "pointerLs size: " << pointerLs2->size() << std::endl;
 	if (value < -100000)
 		value = 0;
 	if (mode != 10)
 		for (unsigned int i(0); i < liaisons.size(); i++)
-			(*pointerLs2)[colonne + 1][liaisons[i]].inputs.push_back(value);
+			(*pointerLs2)[colonne + 1][liaisons[i]].pushInput(input);
 	else {
 		for (unsigned int i(0); i < inputs.size(); i++)
 			value += inputs[i];
-		inputs.clear();
-		(*output)(value);
+		//inputs.clear();
+		(*output)(input);
 	}
+	input = 0;
+	inputX = false;
 }
 
 Neurons::~Neurons()

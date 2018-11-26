@@ -13,6 +13,7 @@ public:
 	void breakLiaison(int nbNeuron);
 
 	void activate(std::vector<std::vector<Neurons>> *pointerLs2, void(*output)(int) = 0);
+	void pushInput(int i);
 
 	std::vector<int> liaisons;
 	//std::vector<std::vector<Neurons>> *pointerLs = 0;
@@ -22,6 +23,9 @@ public:
 	int colonne;
 	int id;
 	int memory;
+	int input = 0;
+	bool inputConst = false;
+	bool inputX = false;
 
 	~Neurons();
 };
