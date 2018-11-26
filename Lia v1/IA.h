@@ -17,11 +17,12 @@ public:
 	void update();
 
 	std::string returnADN();
+	std::string debug();
 	bool mutate();
 
 	void output(int out);
-	int numFindStr(std::string str0, std::string strF);
-	std::string fusion(std::string genom1, std::string genom2);
+	static int numFindStr(std::string str0, std::string strF);
+	static std::string fusion(std::string genom1, std::string genom2);
 
 	void addOutput( void (*f)(int) );
 	void addInput(int *input, int liaison);

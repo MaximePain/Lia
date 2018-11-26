@@ -27,8 +27,39 @@ void Neurons::breakLiaison(int nbNeuron)
 	liaisons = replace;
 }
 
-void Neurons::activate(std::vector<std::vector<Neurons>> *pointerLs2, void (*output)(int)) //0 = addition, 1 = multiplication, 2 = division, 3 = soustraction, 4 = &&, 5 = ||, 6 = !, 7 = CONST, 8 = MEM
+void Neurons::activate(std::vector<std::vector<Neurons>> *pointerLs2, void(*output)(int)) //0 = addition, 1 = multiplication, 2 = division, 3 = soustraction, 4 = &&, 5 = ||, 6 = !, 7 = CONST, 8 = MEM
 {
+	/*for (int m = 0; m < 9; m++) {
+		int c = -1;
+		int c2 = 0;
+		for (int i = 0; i < liaisons.size(); i++)
+		{
+			if (liaisons[i] == m)
+				if (c == -1)
+				{
+					c = i;
+				}
+				else
+				{
+					c2 = 1;
+				}
+		}
+		if (c2) {
+			std::vector<int>temp;
+			temp.clear();
+			for (int y = 0; y < liaisons.size(); y++) {
+				if ( (y != c) && ( (*pointerLs2)[colonne + 1].size() > liaisons[y] ) )
+					temp.push_back(liaisons[y]);
+			}
+			liaisons.swap(temp);
+		}
+	}*/
+	std::vector<int> temp;
+	for (int i = 0; i < liaisons.size(); i++)
+		if ((*pointerLs2)[colonne + 1].size() > liaisons[i])
+			temp.push_back(liaisons[i]);
+	liaisons.clear();
+	liaisons.swap(temp);
 	int value = 0;
 	switch (mode)
 	{
@@ -85,7 +116,7 @@ void Neurons::activate(std::vector<std::vector<Neurons>> *pointerLs2, void (*out
 					value = 1;
 			inputs.clear();
 		}
-		else 
+		else
 			value = 0;
 		break;
 	case 6: //!
@@ -121,6 +152,8 @@ void Neurons::activate(std::vector<std::vector<Neurons>> *pointerLs2, void (*out
 		break;
 	}
 	//std::cout << "pointerLs size: " << pointerLs2->size() << std::endl;
+	if (value < -100000)
+		value = 0;
 	if (mode != 10)
 		for (unsigned int i(0); i < liaisons.size(); i++)
 			(*pointerLs2)[colonne + 1][liaisons[i]].inputs.push_back(value);

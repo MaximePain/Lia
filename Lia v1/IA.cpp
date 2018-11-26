@@ -124,6 +124,7 @@ IA::IA(std::string params) //std::string neuronBase = "0:0!0|0:0!0|0:0!0|0:0!0|0
 				ss << ':';
 				if (params[nbChar] != '|')
 					nbChar++;
+
 				if (numFindStr(params, ss.str()) == 0 && modeNeuron != 10 && !rajout[nbCol] && notEnd) //rectification si colonne a disparue (on sait jamais)
 				{
 					rajout[nbCol] = true;
@@ -134,7 +135,9 @@ IA::IA(std::string params) //std::string neuronBase = "0:0!0|0:0!0|0:0!0|0:0!0|0
 					nbColVec[nbCol + 1]++;
 				}
 
-				if (numFindStr(params, ss.str()) > liaisonNum || !notEnd)
+				if (numFindStr(params, ss.str()) > liaisonNum && notEnd) // || !
+					neuronsLs[nbCol][nbColVec[nbCol] - 1].makeLiaison(liaisonNum);
+				else //debug pour l'instant
 					neuronsLs[nbCol][nbColVec[nbCol] - 1].makeLiaison(liaisonNum);
 				msg = "";
 			}
@@ -193,6 +196,38 @@ void IA::update()
 }
 
 std::string IA::returnADN()
+{
+	std::string msg = "";
+	std::stringstream ss;
+	for (unsigned int i(0); i < neuronsLs.size(); i++)
+	{
+		for (unsigned int y(0); y < neuronsLs[i].size(); y++)
+		{
+			ss << i;
+			ss << ':';
+			ss << neuronsLs[i][y].mode;
+			ss << '!';
+			for (unsigned int z(0); z < neuronsLs[i][y].liaisons.size(); z++)
+			{
+				ss << neuronsLs[i][y].liaisons[z];
+				if ((z + 1) < neuronsLs[i][y].liaisons.size())
+					ss << ',';
+			}
+			ss << '|';
+		}
+	}
+	msg = ss.str();
+	int nb = msg.find(":10");
+	if (nb != std::string::npos)
+	{
+		while (msg[nb] != '|')
+			nb--;
+		nb++;
+		msg = msg.substr(0, nb);
+	}
+	return msg;
+}
+std::string IA::debug()
 {
 	std::string msg = "";
 	std::stringstream ss;
@@ -329,7 +364,7 @@ void IA::output(int out)
 	outputList[newUpdate](out);
 }
 
-std::string IA::fusion(std::string genom1, std::string genom2) //std::string neuronBase = "0:0!0|0:0!0|0:0!0|0:0!0|0:0!0|1:10!0|";
+std::string IA::fusion(std::string genom1, std::string genom2) //std::string neuronBase = "0:0!0|0:0!0|0:0!0|0:0!0|1:0!0|2:10!0|";
 {
 	std::string result = "";
 	std::string extract1 = "";
@@ -391,7 +426,7 @@ std::string IA::fusion(std::string genom1, std::string genom2) //std::string neu
 		if (nbChar1 + 1 >= genom1.size())
 			break;
 	}
-	std::cout << "result String: " << result << std::endl;
+	//std::cout << "result String: " << result << std::endl;
 	return result;
 }
 
@@ -401,6 +436,7 @@ void IA::addOutput(void(*f)(int))
 	if (!alreadyOutAdd) {
 		neuronsLs.push_back(child);
 		alreadyOutAdd = true;
+		//std::cout << neuronsLs.size() << std::endl;
 	}
 	neuronsLs[neuronsLs.size() - 1].push_back(Neurons(10, neuronsLs.size() - 1, neuronsLs[neuronsLs.size() - 1].size() - 1));
 	outputList.push_back(f);
